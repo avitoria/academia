@@ -13,10 +13,12 @@
 
 
 -- Volcando estructura de base de datos para academia
+DROP DATABASE IF EXISTS `academia`;
 CREATE DATABASE IF NOT EXISTS `academia` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `academia`;
 
 -- Volcando estructura para tabla academia.alumnos_curso
+DROP TABLE IF EXISTS `alumnos_curso`;
 CREATE TABLE IF NOT EXISTS `alumnos_curso` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_alumno` int NOT NULL DEFAULT '0',
@@ -26,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `alumnos_curso` (
   KEY `fk_id_curso` (`id_curso`),
   CONSTRAINT `fk_id_alumno` FOREIGN KEY (`id_alumno`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `fk_id_curso` FOREIGN KEY (`id_curso`) REFERENCES `cursos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla academia.alumnos_curso: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla academia.alumnos_curso: ~9 rows (aproximadamente)
 DELETE FROM `alumnos_curso`;
 /*!40000 ALTER TABLE `alumnos_curso` DISABLE KEYS */;
 INSERT INTO `alumnos_curso` (`id`, `id_alumno`, `id_curso`) VALUES
@@ -39,10 +41,12 @@ INSERT INTO `alumnos_curso` (`id`, `id_alumno`, `id_curso`) VALUES
 	(5, 6, 2),
 	(6, 6, 3),
 	(7, 7, 1),
-	(8, 7, 3);
+	(8, 7, 3),
+	(9, 4, 3);
 /*!40000 ALTER TABLE `alumnos_curso` ENABLE KEYS */;
 
 -- Volcando estructura para tabla academia.cursos
+DROP TABLE IF EXISTS `cursos`;
 CREATE TABLE IF NOT EXISTS `cursos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `curso` varchar(100) NOT NULL DEFAULT 'N/A',
@@ -52,9 +56,9 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   PRIMARY KEY (`id`),
   KEY `fk_id_profesor` (`id_profesor`),
   CONSTRAINT `fk_id_profesor` FOREIGN KEY (`id_profesor`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla academia.cursos: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla academia.cursos: ~3 rows (aproximadamente)
 DELETE FROM `cursos`;
 /*!40000 ALTER TABLE `cursos` DISABLE KEYS */;
 INSERT INTO `cursos` (`id`, `curso`, `identificador`, `horas`, `id_profesor`) VALUES
@@ -64,6 +68,7 @@ INSERT INTO `cursos` (`id`, `curso`, `identificador`, `horas`, `id_profesor`) VA
 /*!40000 ALTER TABLE `cursos` ENABLE KEYS */;
 
 -- Volcando estructura para tabla academia.usuarios
+DROP TABLE IF EXISTS `usuarios`;
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL DEFAULT '0',
@@ -73,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla academia.usuarios: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla academia.usuarios: ~7 rows (aproximadamente)
 DELETE FROM `usuarios`;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
 INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `rol`, `password`) VALUES
