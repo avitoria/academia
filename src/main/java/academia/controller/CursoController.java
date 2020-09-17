@@ -34,27 +34,49 @@ public class CursoController extends HttpServlet {
 		String pIdCurso = request.getParameter("id");
 		String mensaje = "";
 
+		Usuario usuario = (Usuario) sesion.getAttribute("usuario");
+
 		if (pIdCurso != null) {
 			int idCurso = Integer.parseInt(pIdCurso);
 
-			try {
-				dao.borrarCurso(idCurso);
-				mensaje = "Se ha eliminado el curso con id " + idCurso;
+			if (usuario.getRol() == Usuario.ROL_ALUMNO) {
+				// Damos de alta al alumno en el curso idCurso
+				try {
+					dao.apuntarAlumnoEnCurso(usuario.getId(), idCurso);
+					mensaje = "Te has apuntado al curso correctamente.";
 
-			} catch (Exception e) {
-				mensaje = "No se ha podido eliminar el curso con id " + idCurso;
-				e.printStackTrace();
+				} catch (Exception e) {
+					mensaje = "No se ha podido realizar el alta en el curso";
+				}
 
-			} finally {
-				request.getSession().setAttribute("mensaje", mensaje);
+			} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
+				// Borramos el curso idCurso
+				try {
+					dao.borrarCurso(idCurso);
+					mensaje = "Se ha eliminado el curso con id " + idCurso;
+
+				} catch (Exception e) {
+					mensaje = "No se ha podido eliminar el curso con id " + idCurso;
+					e.printStackTrace();
+				}
 			}
+
+			sesion.setAttribute("mensaje", mensaje);
 		}
 
-		Usuario usuario = (Usuario) sesion.getAttribute("usuario");
-		ArrayList<Curso> cursos = dao.buscarCursosPorProfesor(usuario.getId());
-		sesion.setAttribute("cursos", cursos);
+		if (usuario.getRol() == Usuario.ROL_ALUMNO) {
+			ArrayList<Curso> cursos = dao.buscarCursosPorAlumno(usuario.getId());
+			sesion.setAttribute("cursos", cursos);
 
-		response.sendRedirect("privado/profesor.jsp");
+			response.sendRedirect("privado/alumno.jsp");
+
+		} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
+
+			ArrayList<Curso> cursos = dao.buscarCursosPorProfesor(usuario.getId());
+			sesion.setAttribute("cursos", cursos);
+
+			response.sendRedirect("privado/profesor.jsp");
+		}
 	}
 
 	/**

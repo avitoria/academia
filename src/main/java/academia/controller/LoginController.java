@@ -48,12 +48,14 @@ public class LoginController extends HttpServlet {
 			session.setMaxInactiveInterval(60 * 5);
 			session.setAttribute("usuario", usuario);
 
-			if (usuario.getRol() == Usuario.ROL_ALUMNO) {
-				response.sendRedirect("privado/alumno.jsp");
+			/*
+			 * if (usuario.getRol() == Usuario.ROL_ALUMNO) { response.sendRedirect("curso");
+			 * 
+			 * } else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
+			 * response.sendRedirect("curso"); }
+			 */
 
-			} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
-				response.sendRedirect("curso");
-			}
+			response.sendRedirect("curso");
 
 		} else {
 			request.setAttribute("mensaje", "Error: usuario y/o password incorrectos.");

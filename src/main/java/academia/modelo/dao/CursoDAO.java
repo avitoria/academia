@@ -24,6 +24,14 @@ public interface CursoDAO {
 	ArrayList<Curso> buscarCursosPorProfesor(int idProfesor); // ¿Por qué no lanza excepción?
 
 	/**
+	 * Devuelve todos los cursos en los que está apuntado un alumno
+	 * 
+	 * @param idAlumno
+	 * @return todos
+	 */
+	ArrayList<Curso> buscarCursosPorAlumno(int idAlumno);
+
+	/**
 	 * Elimina un curso
 	 * 
 	 * @param idCurso
@@ -40,4 +48,13 @@ public interface CursoDAO {
 	 * @throws Exception
 	 */
 	Curso crearCurso(Curso curso) throws Exception;
+
+	/**
+	 * Apunta a un alumno en un curso
+	 * 
+	 * @param idAlumno
+	 * @param idCurso
+	 * @throws Exception
+	 */
+	void apuntarAlumnoEnCurso(int idAlumno, int idCurso) throws Exception;
 }

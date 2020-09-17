@@ -13,7 +13,7 @@
     <!-- fontawesome 5 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     
-	<title>Insert title here</title>
+	<title>Panel profesor</title>
 </head>
 <body>
 	<h1>${mensaje}</h1>

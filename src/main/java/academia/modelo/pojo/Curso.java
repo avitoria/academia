@@ -7,6 +7,7 @@ public class Curso {
 	private String identificador;
 	private int horas;
 	private Usuario profesor;
+	private boolean apuntado;
 	// TODO
 	// private ArrayList<Alumno> alumno
 
@@ -17,6 +18,7 @@ public class Curso {
 		this.identificador = "";
 		this.horas = 0;
 		this.profesor = new Usuario();
+		this.apuntado = false;
 	}
 
 	public int getId() {
@@ -57,6 +59,14 @@ public class Curso {
 
 	public void setProfesor(Usuario profesor) {
 		this.profesor = profesor;
+	}
+
+	public boolean isApuntado() {
+		return apuntado;
+	}
+
+	public void setApuntado(boolean apuntado) {
+		this.apuntado = apuntado;
 	}
 
 	@Override

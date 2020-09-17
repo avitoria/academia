@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
@@ -24,6 +25,8 @@ public class CursoDAOImpl implements CursoDAO {
 			+ "FROM cursos c, profesores f\n" + "WHERE\n" + "	c.id_profesor = f.id;";
 	private final static String SQL_GET_BY_ID = "SELECT id, curso, identificador, horas, id_profesor FROM cursos WHERE id = ?;";
 	private final static String SQL_BUSCAR_POR_PROFESOR = "SELECT id, curso, identificador, horas FROM cursos WHERE id_profesor = ?;";
+	private final static String SQL_BUSCAR_POR_ALUMNO = "SELECT c.id, c.curso, c.identificador, c.horas, ac.id_alumno FROM cursos c, alumnos_curso ac WHERE c.id = ac.id_curso ORDER BY c.curso;";
+	private final static String SQL_APUNTAR_ALUMNO_EN_CURSO = "INSERT INTO alumnos_curso (id_alumno, id_curso) VALUES (?, ?);";
 	private final static String SQL_BORRAR_CURSO = "DELETE FROM cursos WHERE id = ?";
 	private final static String SQL_CREAR_CURSO = "INSERT INTO cursos (curso, identificador, horas, id_profesor) VALUES (?, ?, ?, ?);";
 
@@ -92,7 +95,7 @@ public class CursoDAOImpl implements CursoDAO {
 			}
 
 		} catch (Exception e) {
-
+			LOG.error(e);
 		}
 
 		return cursos;
@@ -175,6 +178,66 @@ public class CursoDAOImpl implements CursoDAO {
 		}
 
 		return curso;
+	}
+
+	@Override
+	public ArrayList<Curso> buscarCursosPorAlumno(int idAlumno) {
+		HashMap<Integer, Curso> cursos = new HashMap<Integer, Curso>();
+
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_BUSCAR_POR_ALUMNO)) {
+			// pst.setInt(1, idAlumno);
+
+			try (ResultSet rs = pst.executeQuery()) {
+
+				while (rs.next()) {
+					int idCurso = rs.getInt("id");
+
+					Curso c = cursos.get(idCurso);
+
+					if (c == null) {
+						// El curso no está en el HashMap. Lo creamos y lo metemos.
+						c = mapper(rs);
+
+						if (rs.getInt("id_alumno") == idAlumno) {
+							c.setApuntado(true);
+
+						} else {
+							c.setApuntado(false);
+						}
+
+					} else {
+						// El curso sí está en el HashMap.
+						if (rs.getInt("id_alumno") == idAlumno) {
+							c.setApuntado(true);
+						}
+					}
+
+					cursos.put(idCurso, c);
+				}
+			}
+
+		} catch (Exception e) {
+			LOG.error(e);
+		}
+
+		return new ArrayList<Curso>(cursos.values());
+	}
+
+	@Override
+	public void apuntarAlumnoEnCurso(int idAlumno, int idCurso) throws Exception {
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_APUNTAR_ALUMNO_EN_CURSO,
+						PreparedStatement.RETURN_GENERATED_KEYS)) {
+			pst.setInt(1, idAlumno);
+			pst.setInt(2, idCurso);
+
+			int affectedRows = pst.executeUpdate();
+
+			if (affectedRows < 1) {
+				throw new Exception("No se ha podido crear el curso.");
+			}
+		}
 	}
 
 }
