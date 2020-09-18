@@ -121,10 +121,14 @@ public class CursoController extends HttpServlet {
 
 		} catch (Exception e) {
 			mensaje = "No se ha podido crear el nuevo curso.";
+			e.printStackTrace();
 
 		} finally {
-			request.setAttribute("mensaje", mensaje);
-			request.getRequestDispatcher("privado/formulario.jsp").forward(request, response);
+			// request.setAttribute("mensaje", mensaje);
+			// request.getRequestDispatcher("privado/formulario.jsp").forward(request,
+			// response);
+			request.getSession().setAttribute("mensaje", mensaje);
+			response.sendRedirect("privado/formulario.jsp");
 		}
 
 	}
