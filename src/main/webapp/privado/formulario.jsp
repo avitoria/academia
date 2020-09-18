@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,6 +9,10 @@
 	<title>Crear nuevo curso</title>
 </head>
 <body>
+	<c:if test="${not empty mensaje}">
+		<div class="alert alert-danger" role="alert">${mensaje}</div>
+	</c:if>
+	
 	<form action="../curso" method="post">
 		<div class="form-group">
 			<label for="nombre">Nombre</label>
@@ -20,7 +24,7 @@
   		</div>
   		<div class="form-group">
 			<label for="horas">Horas</label>
-    		<input type="number" class="form-control" id="horas" name="horas">
+    		<input type="number" class="form-control" id="horas" name="horas" value="0">
   		</div>
   		
   		<button type="submit" class="btn btn-primary">Enviar</button>

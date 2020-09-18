@@ -2,6 +2,7 @@ package academia.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import academia.modelo.dao.impl.CursoDAOImpl;
 import academia.modelo.pojo.Curso;
@@ -21,6 +26,8 @@ import academia.modelo.pojo.Usuario;
 public class CursoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	private static Validator validator = factory.getValidator();
 	private static CursoDAOImpl dao = CursoDAOImpl.getInstance();
 
 	/**
@@ -71,7 +78,6 @@ public class CursoController extends HttpServlet {
 			response.sendRedirect("privado/alumno.jsp");
 
 		} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
-
 			ArrayList<Curso> cursos = dao.buscarCursosPorProfesor(usuario.getId());
 			sesion.setAttribute("cursos", cursos);
 
@@ -87,7 +93,6 @@ public class CursoController extends HttpServlet {
 			throws ServletException, IOException {
 
 		String mensaje = "";
-		String url = "";
 
 		try {
 			String nombre = request.getParameter("nombre");
@@ -101,16 +106,25 @@ public class CursoController extends HttpServlet {
 			curso.setHoras(horas);
 			curso.setProfesor(profesor);
 
-			dao.crearCurso(curso);
-			mensaje = "El nuevo curso ha sido creado correctamente.";
-			request.setAttribute("mensaje", mensaje);
+			Set<ConstraintViolation<Curso>> violations = validator.validate(curso);
 
-			doGet(request, response);
+			if (violations.isEmpty()) {
+				dao.crearCurso(curso);
+				mensaje = "El nuevo curso ha sido creado correctamente.";
+				// request.setAttribute("mensaje", mensaje);
+
+			} else {
+				for (ConstraintViolation<Curso> v : violations) {
+					mensaje += "<p><b>" + v.getPropertyPath() + "</b>: " + v.getMessage() + "</p>";
+				}
+			}
 
 		} catch (Exception e) {
 			mensaje = "No se ha podido crear el nuevo curso.";
+
+		} finally {
 			request.setAttribute("mensaje", mensaje);
-			request.getRequestDispatcher("formulario.jsp").forward(request, response);
+			request.getRequestDispatcher("privado/formulario.jsp").forward(request, response);
 		}
 
 	}

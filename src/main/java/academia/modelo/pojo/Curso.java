@@ -1,11 +1,22 @@
 package academia.modelo.pojo;
 
+import javax.validation.constraints.Min;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 public class Curso {
 
 	private int id;
+
+	@NotBlank(message = "Debe introducir un nombre")
 	private String nombre;
+
+	@NotBlank(message = "Debe introducir un identificador")
 	private String identificador;
+
+	@Min(value = 0, message = "El número de horas no puede ser negativo")
 	private int horas;
+
 	private Usuario profesor;
 	private boolean apuntado;
 	// TODO

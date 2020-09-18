@@ -16,7 +16,9 @@
 	<title>Panel profesor</title>
 </head>
 <body>
-	<h1>${mensaje}</h1>
+	<c:if test="${not empty mensaje}">
+		<div class="alert alert-success" role="alert">${mensaje}</div>
+	</c:if>
 	
 	<a href="formulario.jsp">Crear nuevo curso</a>
 	
