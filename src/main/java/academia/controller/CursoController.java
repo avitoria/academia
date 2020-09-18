@@ -17,6 +17,7 @@ import javax.validation.ValidatorFactory;
 
 import academia.modelo.dao.impl.CursoDAOImpl;
 import academia.modelo.pojo.Curso;
+import academia.modelo.pojo.Mensaje;
 import academia.modelo.pojo.Usuario;
 
 /**
@@ -39,7 +40,8 @@ public class CursoController extends HttpServlet {
 
 		HttpSession sesion = request.getSession();
 		String pIdCurso = request.getParameter("id");
-		String mensaje = "";
+		// String mensaje = "";
+		Mensaje mensaje = null;
 
 		Usuario usuario = (Usuario) sesion.getAttribute("usuario");
 
@@ -50,20 +52,24 @@ public class CursoController extends HttpServlet {
 				// Damos de alta al alumno en el curso idCurso
 				try {
 					dao.apuntarAlumnoEnCurso(usuario.getId(), idCurso);
-					mensaje = "Te has apuntado al curso correctamente.";
+					// mensaje = "Te has apuntado al curso correctamente.";
+					mensaje = new Mensaje("success", "Te has apuntado al curso correctamente.");
 
 				} catch (Exception e) {
-					mensaje = "No se ha podido realizar el alta en el curso";
+					// mensaje = "No se ha podido realizar el alta en el curso";
+					mensaje = new Mensaje("danger", "No se ha podido realizar el alta en el curso");
 				}
 
 			} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
 				// Borramos el curso idCurso
 				try {
 					dao.borrarCurso(idCurso);
-					mensaje = "Se ha eliminado el curso con id " + idCurso;
+					// mensaje = "Se ha eliminado el curso con id " + idCurso;
+					mensaje = new Mensaje("success", "Se ha eliminado el curso con id " + idCurso);
 
 				} catch (Exception e) {
-					mensaje = "No se ha podido eliminar el curso con id " + idCurso;
+					// mensaje = "No se ha podido eliminar el curso con id " + idCurso;
+					mensaje = new Mensaje("danger", "No se ha podido eliminar el curso con id " + idCurso);
 					e.printStackTrace();
 				}
 			}
@@ -92,7 +98,7 @@ public class CursoController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String mensaje = "";
+		Mensaje mensaje = null;
 
 		try {
 			String nombre = request.getParameter("nombre");
@@ -110,17 +116,24 @@ public class CursoController extends HttpServlet {
 
 			if (violations.isEmpty()) {
 				dao.crearCurso(curso);
-				mensaje = "El nuevo curso ha sido creado correctamente.";
+				mensaje = new Mensaje("success", "El nuevo curso ha sido creado correctamente.");
+				// mensaje = "El nuevo curso ha sido creado correctamente.";
 				// request.setAttribute("mensaje", mensaje);
 
 			} else {
+
+				String textoErrores = "";
+
 				for (ConstraintViolation<Curso> v : violations) {
-					mensaje += "<p><b>" + v.getPropertyPath() + "</b>: " + v.getMessage() + "</p>";
+					textoErrores += "<p><b>" + v.getPropertyPath() + "</b>: " + v.getMessage() + "</p>";
 				}
+
+				mensaje = new Mensaje("danger", textoErrores);
 			}
 
 		} catch (Exception e) {
-			mensaje = "No se ha podido crear el nuevo curso.";
+			// mensaje = "No se ha podido crear el nuevo curso.";
+			mensaje = new Mensaje("danger", "No se ha podido crear el nuevo curso.");
 			e.printStackTrace();
 
 		} finally {

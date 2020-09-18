@@ -17,7 +17,7 @@
 </head>
 <body>
 	<c:if test="${not empty mensaje}">
-		<div class="alert alert-success" role="alert">${mensaje}</div>
+		<div class="alert alert-${mensaje.tipo}" role="alert">${mensaje.texto}</div>
 	</c:if>
 	
 	<a href="formulario.jsp">Crear nuevo curso</a>

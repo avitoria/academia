@@ -12,7 +12,8 @@
 </head>
 <body>
 	<c:if test="${not empty mensaje}">
-		<div class="alert alert-warning" role="alert">${mensaje}</div>
+	ddd
+		<div class="alert alert-${mensaje.tipo}" role="alert">${mensaje.texto}</div>
 	</c:if>
 	
 	<form action="login" method="post">

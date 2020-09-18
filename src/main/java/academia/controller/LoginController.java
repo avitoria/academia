@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import academia.modelo.dao.impl.UsuarioDAOImpl;
+import academia.modelo.pojo.Mensaje;
 import academia.modelo.pojo.Usuario;
 
 /**
@@ -58,7 +59,7 @@ public class LoginController extends HttpServlet {
 			response.sendRedirect("curso");
 
 		} else {
-			request.setAttribute("mensaje", "Error: usuario y/o password incorrectos.");
+			request.setAttribute("mensaje", new Mensaje("warning", "Error: usuario y/o password incorrectos."));
 			request.getRequestDispatcher("login.jsp").forward(request, response);
 			// response.sendRedirect("views/login.jsp?mensaje=Error:%20usuario%20o%20password%20incorrectos.");
 		}
