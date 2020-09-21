@@ -49,19 +49,11 @@ public class LoginController extends HttpServlet {
 			session.setMaxInactiveInterval(60 * 5);
 			session.setAttribute("usuario", usuario);
 
-			/*
-			 * if (usuario.getRol() == Usuario.ROL_ALUMNO) { response.sendRedirect("curso");
-			 * 
-			 * } else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
-			 * response.sendRedirect("curso"); }
-			 */
-
-			response.sendRedirect("curso");
+			response.sendRedirect("privado/curso");
 
 		} else {
 			request.setAttribute("mensaje", new Mensaje("warning", "Error: usuario y/o password incorrectos."));
 			request.getRequestDispatcher("login.jsp").forward(request, response);
-			// response.sendRedirect("views/login.jsp?mensaje=Error:%20usuario%20o%20password%20incorrectos.");
 		}
 
 	}

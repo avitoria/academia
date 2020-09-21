@@ -23,7 +23,7 @@ import academia.modelo.pojo.Usuario;
 /**
  * Servlet implementation class CursoController
  */
-@WebServlet("/curso")
+@WebServlet("/privado/curso")
 public class CursoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -40,7 +40,6 @@ public class CursoController extends HttpServlet {
 
 		HttpSession sesion = request.getSession();
 		String pIdCurso = request.getParameter("id");
-		// String mensaje = "";
 		Mensaje mensaje = null;
 
 		Usuario usuario = (Usuario) sesion.getAttribute("usuario");
@@ -52,11 +51,9 @@ public class CursoController extends HttpServlet {
 				// Damos de alta al alumno en el curso idCurso
 				try {
 					dao.apuntarAlumnoEnCurso(usuario.getId(), idCurso);
-					// mensaje = "Te has apuntado al curso correctamente.";
 					mensaje = new Mensaje("success", "Te has apuntado al curso correctamente.");
 
 				} catch (Exception e) {
-					// mensaje = "No se ha podido realizar el alta en el curso";
 					mensaje = new Mensaje("danger", "No se ha podido realizar el alta en el curso");
 				}
 
@@ -64,11 +61,9 @@ public class CursoController extends HttpServlet {
 				// Borramos el curso idCurso
 				try {
 					dao.borrarCurso(idCurso);
-					// mensaje = "Se ha eliminado el curso con id " + idCurso;
 					mensaje = new Mensaje("success", "Se ha eliminado el curso con id " + idCurso);
 
 				} catch (Exception e) {
-					// mensaje = "No se ha podido eliminar el curso con id " + idCurso;
 					mensaje = new Mensaje("danger", "No se ha podido eliminar el curso con id " + idCurso);
 					e.printStackTrace();
 				}
@@ -81,13 +76,13 @@ public class CursoController extends HttpServlet {
 			ArrayList<Curso> cursos = dao.buscarCursosPorAlumno(usuario.getId());
 			sesion.setAttribute("cursos", cursos);
 
-			response.sendRedirect("privado/alumno.jsp");
+			response.sendRedirect("alumno.jsp");
 
 		} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {
 			ArrayList<Curso> cursos = dao.buscarCursosPorProfesor(usuario.getId());
 			sesion.setAttribute("cursos", cursos);
 
-			response.sendRedirect("privado/profesor.jsp");
+			response.sendRedirect("profesor.jsp");
 		}
 	}
 
@@ -121,7 +116,6 @@ public class CursoController extends HttpServlet {
 				// request.setAttribute("mensaje", mensaje);
 
 			} else {
-
 				String textoErrores = "";
 
 				for (ConstraintViolation<Curso> v : violations) {

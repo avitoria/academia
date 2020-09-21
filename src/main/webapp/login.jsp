@@ -12,7 +12,6 @@
 </head>
 <body>
 	<c:if test="${not empty mensaje}">
-	ddd
 		<div class="alert alert-${mensaje.tipo}" role="alert">${mensaje.texto}</div>
 	</c:if>
 	
