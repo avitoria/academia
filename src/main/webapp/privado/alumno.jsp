@@ -1,6 +1,5 @@
 <%@include file="../includes/cabecera.jsp" %>
 
-<body>
 	<c:if test="${not empty mensaje}">
 		<div class="alert alert-${mensaje.tipo}" role="alert">${mensaje.texto}</div>
 	</c:if>
@@ -22,10 +21,10 @@
 					<td>${c.horas} h.</td>
 					<td>
 						<c:if test="${c.apuntado}">
-							Estás apuntado
+							Estás apuntado (<a href="../privado/curso?accion=baja&id=${c.id}">date de baja</a>)
 						</c:if>
 						<c:if test="${not c.apuntado}">
-							<a href="../curso?id=${c.id}">Apúntate</a>
+							<a href="../privado/curso?accion='alta'&id=${c.id}">Apúntate</a>
 						</c:if>
 					</td>
 				</tr>

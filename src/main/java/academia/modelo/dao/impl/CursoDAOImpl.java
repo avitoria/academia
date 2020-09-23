@@ -24,9 +24,12 @@ public class CursoDAOImpl implements CursoDAO {
 			+ "	f.nombre as 'profesor_nombre',\n" + "	f.apellidos as 'profesor_apellidos'\n" + "\n"
 			+ "FROM cursos c, profesores f\n" + "WHERE\n" + "	c.id_profesor = f.id;";
 	private final static String SQL_GET_BY_ID = "SELECT id, curso, identificador, horas, id_profesor FROM cursos WHERE id = ?;";
-	private final static String SQL_BUSCAR_POR_PROFESOR = "SELECT id, curso, identificador, horas FROM cursos WHERE id_profesor = ?;";
+	// private final static String SQL_BUSCAR_POR_PROFESOR = "SELECT id, curso,
+	// identificador, horas FROM cursos WHERE id_profesor = ?;";
+	private final static String SQL_BUSCAR_POR_PROFESOR = "SELECT c.id, c.curso, c.identificador, c.horas, COUNT(ac.id_alumno) AS num_alumnos FROM cursos c, usuarios u, alumnos_curso ac WHERE c.id_profesor = u.id AND c.id = ac.id_curso AND u.id = ? GROUP BY c.id ORDER BY c.id ASC;";
 	private final static String SQL_BUSCAR_POR_ALUMNO = "SELECT c.id, c.curso, c.identificador, c.horas, ac.id_alumno FROM cursos c, alumnos_curso ac WHERE c.id = ac.id_curso ORDER BY c.curso;";
 	private final static String SQL_APUNTAR_ALUMNO_EN_CURSO = "INSERT INTO alumnos_curso (id_alumno, id_curso) VALUES (?, ?);";
+	private final static String SQL_DESAPUNTAR_ALUMNO_DE_CURSO = "DELETE FROM alumnos_curso WHERE id_alumno = ? AND id_curso = ?";
 	private final static String SQL_BORRAR_CURSO = "DELETE FROM cursos WHERE id = ?";
 	private final static String SQL_CREAR_CURSO = "INSERT INTO cursos (curso, identificador, horas, id_profesor) VALUES (?, ?, ?, ?);";
 
@@ -79,87 +82,6 @@ public class CursoDAOImpl implements CursoDAO {
 	}
 
 	@Override
-	public ArrayList<Curso> buscarCursosPorProfesor(int idProfesor) {
-
-		ArrayList<Curso> cursos = new ArrayList<Curso>();
-
-		try (Connection con = ConnectionManager.getConnection();
-				PreparedStatement pst = con.prepareStatement(SQL_BUSCAR_POR_PROFESOR)) {
-			pst.setInt(1, idProfesor);
-
-			try (ResultSet rs = pst.executeQuery()) {
-
-				while (rs.next()) {
-					cursos.add(mapper(rs));
-				}
-			}
-
-		} catch (Exception e) {
-			LOG.error(e);
-		}
-
-		return cursos;
-	}
-
-	private Curso mapper(ResultSet rs) throws SQLException {
-		Curso curso = new Curso();
-		curso.setId(rs.getInt("id"));
-		curso.setNombre(rs.getString("curso"));
-		curso.setIdentificador(rs.getString("identificador"));
-		curso.setHoras(rs.getInt("horas"));
-
-		return curso;
-	}
-
-	@Override
-	public Curso borrarCurso(int idCurso) throws Exception {
-
-		Curso curso = getById(idCurso);
-
-		try (Connection con = ConnectionManager.getConnection();
-				PreparedStatement pst = con.prepareStatement(SQL_BORRAR_CURSO)) {
-
-			pst.setInt(1, idCurso);
-			int affectedRows = pst.executeUpdate();
-
-			if (affectedRows == 0) {
-				throw new Exception("No se ha podido borrar el curso con el id indicado.");
-			}
-		}
-
-		return curso;
-	}
-
-	@Override
-	public Curso crearCurso(Curso curso) throws Exception {
-
-		try (Connection con = ConnectionManager.getConnection();
-				PreparedStatement pst = con.prepareStatement(SQL_CREAR_CURSO,
-						PreparedStatement.RETURN_GENERATED_KEYS)) {
-			pst.setString(1, curso.getNombre());
-			pst.setString(2, curso.getIdentificador());
-			pst.setInt(3, curso.getHoras());
-			pst.setInt(4, curso.getProfesor().getId());
-
-			int affectedRows = pst.executeUpdate();
-
-			if (affectedRows == 1) {
-				try (ResultSet rsKeys = pst.getGeneratedKeys()) {
-					if (rsKeys.next()) {
-						int id = rsKeys.getInt(1);
-						curso.setId(id);
-					}
-				}
-
-			} else {
-				throw new Exception("No se ha podido crear el curso.");
-			}
-		}
-
-		return curso;
-	}
-
-	@Override
 	public Curso getById(int id) throws Exception {
 		Curso curso = null;
 
@@ -178,6 +100,31 @@ public class CursoDAOImpl implements CursoDAO {
 		}
 
 		return curso;
+	}
+
+	@Override
+	public ArrayList<Curso> buscarCursosPorProfesor(int idProfesor) {
+
+		ArrayList<Curso> cursos = new ArrayList<Curso>();
+
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_BUSCAR_POR_PROFESOR)) {
+			pst.setInt(1, idProfesor);
+
+			try (ResultSet rs = pst.executeQuery()) {
+
+				while (rs.next()) {
+					Curso c = mapper(rs);
+					c.setInscripciones(rs.getInt("num_alumnos"));
+					cursos.add(c);
+				}
+			}
+
+		} catch (Exception e) {
+			LOG.error(e);
+		}
+
+		return cursos;
 	}
 
 	@Override
@@ -225,6 +172,54 @@ public class CursoDAOImpl implements CursoDAO {
 	}
 
 	@Override
+	public Curso crearCurso(Curso curso) throws Exception {
+
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_CREAR_CURSO,
+						PreparedStatement.RETURN_GENERATED_KEYS)) {
+			pst.setString(1, curso.getNombre());
+			pst.setString(2, curso.getIdentificador());
+			pst.setInt(3, curso.getHoras());
+			pst.setInt(4, curso.getProfesor().getId());
+
+			int affectedRows = pst.executeUpdate();
+
+			if (affectedRows == 1) {
+				try (ResultSet rsKeys = pst.getGeneratedKeys()) {
+					if (rsKeys.next()) {
+						int id = rsKeys.getInt(1);
+						curso.setId(id);
+					}
+				}
+
+			} else {
+				throw new Exception("No se ha podido crear el curso.");
+			}
+		}
+
+		return curso;
+	}
+
+	@Override
+	public Curso borrarCurso(int idCurso) throws Exception {
+
+		Curso curso = getById(idCurso);
+
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_BORRAR_CURSO)) {
+
+			pst.setInt(1, idCurso);
+			int affectedRows = pst.executeUpdate();
+
+			if (affectedRows == 0) {
+				throw new Exception("No se ha podido borrar el curso con el id indicado.");
+			}
+		}
+
+		return curso;
+	}
+
+	@Override
 	public void apuntarAlumnoEnCurso(int idAlumno, int idCurso) throws Exception {
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pst = con.prepareStatement(SQL_APUNTAR_ALUMNO_EN_CURSO,
@@ -235,9 +230,39 @@ public class CursoDAOImpl implements CursoDAO {
 			int affectedRows = pst.executeUpdate();
 
 			if (affectedRows < 1) {
-				throw new Exception("No se ha podido crear el curso.");
+				throw new Exception("No se ha podido realizar la inscripción en el curso.");
 			}
 		}
+	}
+
+	@Override
+	public void desapuntarAlumnoDeCurso(int idAlumno, int idCurso) throws Exception {
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_DESAPUNTAR_ALUMNO_DE_CURSO,
+						PreparedStatement.RETURN_GENERATED_KEYS)) {
+			pst.setInt(1, idAlumno);
+			pst.setInt(2, idCurso);
+
+			int affectedRows = pst.executeUpdate();
+
+			if (affectedRows < 1) {
+				throw new Exception("No se ha podido realizar la baja del curso.");
+			}
+		}
+	}
+
+	private Curso mapper(ResultSet rs) throws SQLException {
+		Curso curso = new Curso();
+		curso.setId(rs.getInt("id"));
+		curso.setNombre(rs.getString("curso"));
+		curso.setIdentificador(rs.getString("identificador"));
+		curso.setHoras(rs.getInt("horas"));
+
+		// Este set casca si no se llama a SQL_BUSCAR_POR_PROFESOR, porque no tenemos
+		// num_alumnos
+		// curso.setInscripciones(rs.getInt("num_alumnos"));
+
+		return curso;
 	}
 
 }

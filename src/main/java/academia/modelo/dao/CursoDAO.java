@@ -50,11 +50,20 @@ public interface CursoDAO {
 	Curso crearCurso(Curso curso) throws Exception;
 
 	/**
-	 * Apunta a un alumno en un curso
+	 * Da de alta a un alumno en un curso
 	 * 
 	 * @param idAlumno
 	 * @param idCurso
 	 * @throws Exception
 	 */
 	void apuntarAlumnoEnCurso(int idAlumno, int idCurso) throws Exception;
+
+	/**
+	 * Da de baja a un alumno de un curso
+	 * 
+	 * @param idAlumno
+	 * @param idCurso
+	 * @throws Exception
+	 */
+	void desapuntarAlumnoDeCurso(int idAlumno, int idCurso) throws Exception;
 }

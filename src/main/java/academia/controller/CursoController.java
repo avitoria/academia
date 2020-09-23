@@ -15,6 +15,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.log4j.Logger;
+
 import academia.modelo.dao.impl.CursoDAOImpl;
 import academia.modelo.pojo.Curso;
 import academia.modelo.pojo.Mensaje;
@@ -26,6 +28,10 @@ import academia.modelo.pojo.Usuario;
 @WebServlet("/privado/curso")
 public class CursoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private final static Logger LOG = Logger.getLogger(CursoController.class);
+
+	private static final String ACCION_ALTA_ALUMNO_CURSO = "alta";
+	private static final String ACCION__BAJA_ALUMNO_CURSO = "baja";
 
 	private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 	private static Validator validator = factory.getValidator();
@@ -48,13 +54,29 @@ public class CursoController extends HttpServlet {
 			int idCurso = Integer.parseInt(pIdCurso);
 
 			if (usuario.getRol() == Usuario.ROL_ALUMNO) {
-				// Damos de alta al alumno en el curso idCurso
-				try {
-					dao.apuntarAlumnoEnCurso(usuario.getId(), idCurso);
-					mensaje = new Mensaje("success", "Te has apuntado al curso correctamente.");
 
-				} catch (Exception e) {
-					mensaje = new Mensaje("danger", "No se ha podido realizar el alta en el curso");
+				if (ACCION_ALTA_ALUMNO_CURSO.equalsIgnoreCase(request.getParameter("accion"))) {
+					// Damos de alta al alumno en el curso
+					try {
+						dao.apuntarAlumnoEnCurso(usuario.getId(), idCurso);
+						mensaje = new Mensaje("success", "Te has apuntado al curso correctamente.");
+
+					} catch (Exception e) {
+						mensaje = new Mensaje("danger", "No se ha podido realizar el alta en el curso");
+					}
+
+				} else if (ACCION__BAJA_ALUMNO_CURSO.equalsIgnoreCase(request.getParameter("accion"))) {
+					// Damos de baja al alumno del curso
+					try {
+						dao.desapuntarAlumnoDeCurso(usuario.getId(), idCurso);
+						mensaje = new Mensaje("success", "Te has dado de baja del curso correctamente.");
+
+					} catch (Exception e) {
+						mensaje = new Mensaje("danger", "No se ha podido procesar la baja del curso.");
+					}
+
+				} else {
+					// Lanzamos una excepción porque es una acción no permitida
 				}
 
 			} else if (usuario.getRol() == Usuario.ROL_PROFESOR) {

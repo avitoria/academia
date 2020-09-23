@@ -18,6 +18,9 @@ public class Curso {
 	private int horas;
 
 	private Usuario profesor;
+
+	private int inscripciones;
+
 	private boolean apuntado;
 	// TODO
 	// private ArrayList<Alumno> alumno
@@ -29,6 +32,7 @@ public class Curso {
 		this.identificador = "";
 		this.horas = 0;
 		this.profesor = new Usuario();
+		this.inscripciones = 0;
 		this.apuntado = false;
 	}
 
@@ -72,6 +76,14 @@ public class Curso {
 		this.profesor = profesor;
 	}
 
+	public int getInscripciones() {
+		return inscripciones;
+	}
+
+	public void setInscripciones(int inscripciones) {
+		this.inscripciones = inscripciones;
+	}
+
 	public boolean isApuntado() {
 		return apuntado;
 	}
@@ -83,7 +95,7 @@ public class Curso {
 	@Override
 	public String toString() {
 		return "Curso [id=" + id + ", nombre=" + nombre + ", identificador=" + identificador + ", horas=" + horas
-				+ ", profesor=" + profesor + "]";
+				+ ", profesor=" + profesor + ", inscripciones=" + inscripciones + "]";
 	}
 
 }
