@@ -7,7 +7,10 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<a href="login.jsp">Login usuario</a>
-	<a href="rest.jsp">Rest</a>
+	<form method="post" action="prueba-rest">
+		<input type="text" name="id" placeholder="Id del curso" required>
+		<br>
+		<input type="submit" value="Buscar">
+	</form>
 </body>
 </html>

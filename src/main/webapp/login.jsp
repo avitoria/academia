@@ -21,16 +21,18 @@
 			<div class="alert alert-${mensaje.tipo}" role="alert">${mensaje.texto}</div>
 		</c:if>
 		
-		<form action="login" method="post">
-			<div class="form-group">
-				<label for="nombre">Nombre</label>
-	    		<input type="text" class="form-control" id="nombre" name="nombre" value="Lander">
-	  		</div>
-	  		<div class="form-group">
-	    		<label for="password">Password</label>
-	    		<input type="password" class="form-control" id="password" name="password" value="123456">
-	  		</div>
-	  		<button type="submit" class="btn btn-primary">Enviar</button>
-		</form>
+		<div class="width:100%; max-width:330px; padding:15px; margin:auto;">
+			<form action="login" method="post">
+				<div class="form-group">
+					<label for="nombre">Nombre</label>
+		    		<input type="text" class="form-control" id="nombre" name="nombre" value="Lander">
+		  		</div>
+		  		<div class="form-group">
+		    		<label for="password">Password</label>
+		    		<input type="password" class="form-control" id="password" name="password" value="123456">
+		  		</div>
+		  		<button type="submit" class="btn btn-primary">Enviar</button>
+			</form>
+		</div>
 	</body>
 </html>
